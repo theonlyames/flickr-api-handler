@@ -22,8 +22,20 @@
       <h3>Basic flickr-api-handler demo</h3>
       <demo-snippet>
         <template>
-          <flickr-api-handler></flickr-api-handler>
+          <flickr-api-handler id='handles' api_key='c304f1096a06486d3c1e7ab271bf7f3f'>
+          </flickr-api-handler>
+
         </template>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var handler = document.querySelector('#handles');
+          var method ='flickr.photos.search';
+          var params  = {"user_id":'158128259@N08', 'format':'json'};
+          
+          console.log(handler._makeRequest(method, params));
+        });
+
+        </script>
       </demo-snippet>
     </div>
   </body>
