@@ -1,4 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-scroll-threshold/iron-scroll-threshold.html">
+
 
 <dom-module id="flickr-api-handler">
   <template>
@@ -7,27 +10,115 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+
+    <iron-ajax id="ajax"
+               loading="{{loading}}"
+               handle-as="text"
+               on-response="_didReceiveResponse">
+    </iron-ajax>
+
   </template>
 
   <script>
     /**
      * `flickr-api-handler`
-     * Integrates the flickr api in Polymer projects
+     *
      *
      * @customElement
      * @polymer
      * @demo demo/index.html
      */
+
     class FlickrApiHandler extends Polymer.Element {
       static get is() { return 'flickr-api-handler'; }
       static get properties() {
         return {
-          prop1: {
+          api_key: {
             type: String,
-            value: 'flickr-api-handler'
-          }
+            value: 'c304f1096a06486d3c1e7ab271bf7f3f'
+          },
+
+          user: {
+            type: String,
+            value: '142203852@N04'
+          },
+
+					photos: {
+						type: Array,
+						value: function() {
+							return [];
+						}
+
+					},
+
+					gallery: {
+						type: String,
+						value: null
+					},
+
+					page: {
+						type: Number,
+						value: 0,
+					},
+
+					perPage: {
+						type: Number,
+						value: 16
+					},
+
+					totalPages: {
+						type: Number,
+						value: 1
+					},
+
+          loading: Boolean
         };
+      }
+
+      _getAPIEndpoint(api_key, user, page) {
+        return 'https://api.flickr.com/services/rest/?method=flickr.photos.search' +
+            '&api_key=' + api_key +
+            '&safe_search=1&sort=interestingness-desc'+
+            '&user_id=' + user +
+            '&page=' + page +
+            '&format=json' +
+            '&per_page=' + this.perPage;
+      }
+
+
+      _didReceiveResponse(e) {
+        var payload = JSON.parse(e.detail.response.match('jsonFlickrApi\\((.*)\\)')[1]);
+
+        if (!payload || !payload.photos || !payload.photos.photo) {
+          return;
+        }
+
+				this.totalPages = payload.photos.pages;
+
+        payload.photos.photo.forEach(function(photo) {
+          this.push('photos', photo);
+        }, this);
+
+      }
+
+
+      _loadMore() {
+        // console.log(this.loading)
+        if (this.loading) {
+          return;
+        }
+
+				if (this.page < this.totalPages) {
+					this.page++;
+        	this.$.ajax.url=this._getAPIEndpoint(this.api_key, this.user, this.page);
+        	this.$.ajax.generateRequest();
+				}
+        // else {
+        //   console.log('too many pages ' + this.page + ' / ' + this.totalPages);
+        // }
+
+        // console.log(this.photos);
+
       }
     }
 

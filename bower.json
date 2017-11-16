@@ -3,7 +3,9 @@
   "description": "Integrates the flickr api in Polymer projects",
   "main": "flickr-api-handler.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "iron-ajax": "polymerelements/iron-ajax#^2.0.6"
+
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
