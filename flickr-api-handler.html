@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="flickr-api-handler">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `flickr-api-handler`
+     * Integrates the flickr api in Polymer projects
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class FlickrApiHandler extends Polymer.Element {
+      static get is() { return 'flickr-api-handler'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'flickr-api-handler'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(FlickrApiHandler.is, FlickrApiHandler);
+  </script>
+</dom-module>
