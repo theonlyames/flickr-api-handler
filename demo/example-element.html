@@ -1,0 +1,112 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../flickr-api-handler.html">
+<dom-module id="example-element">
+  <template>
+    <style>
+      :host {
+        display: block;
+        text-align: center;
+      }
+
+      .css-grid {
+        display: grid;
+        width: 80vw;
+        height: 80vh;
+        grid-template-columns: repeat(3, minmax(1fr, 33%));
+        grid-template-rows: repeat(3, 33%);
+      }
+
+      .css-grid-item {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: scale-down;
+      }
+      .css-grid-item * {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <flickr-api-handler id='myflickr' api_key="c304f1096a06486d3c1e7ab271bf7f3f"></flickr-api-handler>
+    <div class="css-grid">
+      <template is="dom-repeat" items='{{images}}'>
+        <div class="css-grid-item">
+          <img src$="{{_getPhotoUrl(item)}}" alt="Flickr Photo">
+        </div>
+      </template>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * `example-element`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+
+    class ExampleElement extends Polymer.Element {
+      static get is() { return 'example-element'; }
+      static get properties() {
+        return {
+          handler: Object,
+          api_key: {
+            type: String
+            // value: 'c304f1096a06486d3c1e7ab271bf7f3f'
+          },
+          images: {
+            type: Array,
+            value() { return []; }
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+        this.handler = this.$.myflickr;
+        this._loadPhotos();
+      }
+
+      _loadPhotos() {
+        console.log('phgoto');
+        var method ='flickr.photos.search';
+        var params = {'user_id':'158128259@N08',
+                      'format':'json',
+                      'per_page':'5'};
+
+        var mycallback = function(e) {
+          let payload = JSON.parse(e.detail.response.match('jsonExampleElement\\((.*)\\)')[1]);
+          if (!payload || !payload.photos || !payload.photos.photo) {
+            console.log('a');
+            return;
+          }
+          console.log('b');
+          payload.photos.photo.forEach((photo) => {
+            this.push('images', photo);
+            console.log('c');
+          }, this);
+        }
+        console.log('d');
+        this.handler._makeRequest(method, params, mycallback);
+      }
+
+      _getPhotoUrl(photo) {
+        // console.log(photo);
+        return 'https://farm'
+                + photo.farm
+                + '.staticflickr.com/'
+                + photo.server
+                + '/' + photo.id + '_'
+                + photo.secret + '_b.jpg';
+      }
+
+    }
+
+    window.customElements.define(ExampleElement.is, ExampleElement);
+  </script>
+</dom-module>
